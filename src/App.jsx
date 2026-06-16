@@ -286,7 +286,7 @@ export default function App() {
                 </div>
 
                 {/* Cards Input & Action Button Section */}
-                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-b-xl">
+                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-row items-center justify-between gap-1 sm:gap-4 rounded-b-xl">
                   
                   {/* Home Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
