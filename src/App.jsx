@@ -308,26 +308,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Action Button (Save / Undo) */}
-                  <div className="flex-shrink-0">
-                    {match.isPlayed ? (
-                       <button 
-                         onClick={() => handleUndoMatch(match.id)}
-                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition-colors"
-                       >
-                         <Undo2 className="w-3.5 h-3.5" /> Edit/Reset
-                       </button>
-                    ) : (
-                      <button 
-                        onClick={() => handleSaveMatch(match.id)}
-                        disabled={match.homeScore === '' || match.awayScore === ''}
-                        className="flex items-center gap-1.5 px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-                      >
-                        <Check className="w-4 h-4" /> Simpan
-                      </button>
-                    )}
-                  </div>
-
                   {/* Away Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
@@ -347,8 +327,26 @@ export default function App() {
                       <div className="w-3 h-4 bg-red-500 rounded-sm"></div>
                     </div>
                   </div>
-
                 </div>
+                {/* Action Button (Save / Undo) */}
+                  <div className="flex w-full justify-center items-center py-2">
+                    {match.isPlayed ? (
+                       <button 
+                         onClick={() => handleUndoMatch(match.id)}
+                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition-colors"
+                       >
+                         <Undo2 className="w-3.5 h-3.5" /> Edit/Reset
+                       </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleSaveMatch(match.id)}
+                        disabled={match.homeScore === '' || match.awayScore === ''}
+                        className="flex items-center gap-1.5 px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                      >
+                        <Check className="w-4 h-4" /> Simpan
+                      </button>
+                    )}
+                  </div>
               </div>
             ))}
           </div>
