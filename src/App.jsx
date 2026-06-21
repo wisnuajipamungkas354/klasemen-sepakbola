@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Trophy, Calendar, Check, Undo2, Activity, Info } from 'lucide-react';
+import { Trophy, Calendar, Check, Activity, Info, Pencil, RotateCcw } from 'lucide-react';
 
 const TEAMS = ["Klari", "Lemah Mulya", "Adiarsa Timur", "Tunggak Jati"];
 
@@ -63,8 +63,18 @@ export default function App() {
     }));
   };
 
-  // Function to reset/edit a match (this acts as the edit feature)
-  const handleUndoMatch = (matchId) => {
+  // Function to edit a match (membuka form tanpa menghapus nilai)
+  const handleEditMatch = (matchId) => {
+    setMatches(prevMatches => prevMatches.map(match => 
+      match.id === matchId ? { 
+        ...match, 
+        isPlayed: false // Hanya merubah status form menjadi bisa diedit lagi
+      } : match
+    ));
+  };
+
+  // Function to reset a match (mengosongkan semua nilai di form)
+  const handleResetMatch = (matchId) => {
     setMatches(prevMatches => prevMatches.map(match => 
       match.id === matchId ? { 
         ...match, 
@@ -72,7 +82,7 @@ export default function App() {
         homeScore: '', awayScore: '', 
         homeYellow: '', awayYellow: '', 
         homeRed: '', awayRed: '', 
-        isPlayed: false // Resetting 'isPlayed' makes the inputs editable again
+        isPlayed: false 
       } : match
     ));
   };
@@ -296,8 +306,8 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Cards Input & Action Button Section */}
-                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-b-xl">
+                {/* Cards Input Section */}
+                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                   
                   {/* Home Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
@@ -319,26 +329,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Action Button (Save / Undo) */}
-                  <div className="flex-shrink-0">
-                    {match.isPlayed ? (
-                       <button 
-                         onClick={() => handleUndoMatch(match.id)}
-                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition-colors"
-                       >
-                         <Undo2 className="w-3.5 h-3.5" /> Edit/Reset
-                       </button>
-                    ) : (
-                      <button 
-                        onClick={() => handleSaveMatch(match.id)}
-                        disabled={match.homeScore === '' || match.awayScore === ''}
-                        className="flex items-center gap-1.5 px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-                      >
-                        <Check className="w-4 h-4" /> Simpan
-                      </button>
-                    )}
-                  </div>
-
                   {/* Away Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
@@ -358,7 +348,34 @@ export default function App() {
                       <div className="w-3 h-4 bg-red-500 rounded-sm"></div>
                     </div>
                   </div>
-
+                </div>
+                
+                {/* Action Button (Save / Edit / Reset) */}
+                <div className="bg-slate-50 flex w-full justify-center items-center py-3 pb-4 gap-3 rounded-b-xl border-t border-slate-200">
+                  {match.isPlayed ? (
+                     <>
+                       <button 
+                         onClick={() => handleEditMatch(match.id)}
+                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shadow-sm"
+                       >
+                         <Pencil className="w-4 h-4" /> Edit
+                       </button>
+                       <button 
+                         onClick={() => handleResetMatch(match.id)}
+                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors shadow-sm"
+                       >
+                         <RotateCcw className="w-4 h-4" /> Reset
+                       </button>
+                     </>
+                  ) : (
+                    <button 
+                      onClick={() => handleSaveMatch(match.id)}
+                      disabled={match.homeScore === '' || match.awayScore === ''}
+                      className="flex items-center gap-1.5 px-8 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                    >
+                      <Check className="w-5 h-5" /> Simpan
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
