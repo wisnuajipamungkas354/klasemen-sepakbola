@@ -5,10 +5,10 @@ const TEAMS = ["Klari", "Lemah Mulya", "Adiarsa Timur", "Tunggak Jati"];
 
 // Objek untuk menyimpan link logo masing-masing tim
 const TEAM_LOGOS = {
-  "Klari": "public/klari.png",
-  "Lemah Mulya": "public/lemah-mulya.png",
-  "Adiarsa Timur": "public/adiarsa-timur.png",
-  "Tunggak Jati": "public/tunggak-jati.png"
+  "Klari": "/klari.png",
+  "Lemah Mulya": "/lemah-mulya.png",
+  "Adiarsa Timur": "/adiarsa-timur.png",
+  "Tunggak Jati": "/tunggak-jati.png"
 };
 
 const INITIAL_MATCHES = [
