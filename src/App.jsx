@@ -211,11 +211,15 @@ export default function App() {
                 {standings.map((team, index) => (
                   <tr key={team.name} className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index === 0 ? 'bg-amber-50/30' : ''}`}>
                     <td className="px-3 py-3 text-center font-medium text-gray-500">
-                      {index === 1 ? (
-                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-400 text-white flex items-center justify-center text-xs shadow-sm">1</div>
-                      ) : index === 0 ? ( // Posisi ke-2 visual (index 0 karena sudah di-swap)
-                         <div className="w-6 h-6 mx-auto rounded-full bg-slate-300 text-white flex items-center justify-center text-xs shadow-sm">1</div>
-                      ) : index + 1}
+                      {index === 0 ? (
+                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-400 text-white flex items-center justify-center text-xs shadow-sm font-bold">1</div>
+                      ) : index === 1 ? (
+                         <div className="w-6 h-6 mx-auto rounded-full bg-slate-400 text-white flex items-center justify-center text-xs shadow-sm font-bold">2</div>
+                      ) : index === 2 ? (
+                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-700 text-white flex items-center justify-center text-xs shadow-sm font-bold">3</div>
+                      ) : (
+                         <div className="w-6 h-6 mx-auto flex items-center justify-center text-sm font-medium">{index + 1}</div>
+                      )}
                     </td>
                     <td className="px-3 py-3 font-semibold whitespace-nowrap">
                       {team.name}
