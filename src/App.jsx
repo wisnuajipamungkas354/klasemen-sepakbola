@@ -91,27 +91,38 @@ export default function App() {
 
     // Loop through matches to calculate stats
     matches.forEach(match => {
-      if (match.isPlayed) {
+      // Cek apakah match sudah dimainkan (isPlayed) ATAU kedua skor sudah diketik (real-time)
+      const hasScores = match.homeScore !== '' && match.awayScore !== '';
+      
+      if (match.isPlayed || hasScores) {
+        // Gunakan parseInt dengan fallback 0 agar tidak error saat diketik
+        const hScore = parseInt(match.homeScore) || 0;
+        const aScore = parseInt(match.awayScore) || 0;
+        const hYellow = parseInt(match.homeYellow) || 0;
+        const aYellow = parseInt(match.awayYellow) || 0;
+        const hRed = parseInt(match.homeRed) || 0;
+        const aRed = parseInt(match.awayRed) || 0;
+
         // Update stats for Home Team
         table[match.home].played += 1;
-        table[match.home].goalsFor += match.homeScore;
-        table[match.home].goalsAgainst += match.awayScore;
-        table[match.home].yellowCards += match.homeYellow;
-        table[match.home].redCards += match.homeRed;
+        table[match.home].goalsFor += hScore;
+        table[match.home].goalsAgainst += aScore;
+        table[match.home].yellowCards += hYellow;
+        table[match.home].redCards += hRed;
 
         // Update stats for Away Team
         table[match.away].played += 1;
-        table[match.away].goalsFor += match.awayScore;
-        table[match.away].goalsAgainst += match.homeScore;
-        table[match.away].yellowCards += match.awayYellow;
-        table[match.away].redCards += match.awayRed;
+        table[match.away].goalsFor += aScore;
+        table[match.away].goalsAgainst += hScore;
+        table[match.away].yellowCards += aYellow;
+        table[match.away].redCards += aRed;
 
         // Calculate Points & W/D/L
-        if (match.homeScore > match.awayScore) {
+        if (hScore > aScore) {
           table[match.home].win += 1;
           table[match.home].points += 3;
           table[match.away].lose += 1;
-        } else if (match.homeScore < match.awayScore) {
+        } else if (hScore < aScore) {
           table[match.away].win += 1;
           table[match.away].points += 3;
           table[match.home].lose += 1;
@@ -286,7 +297,7 @@ export default function App() {
                 </div>
 
                 {/* Cards Input & Action Button Section */}
-                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-row items-center justify-between gap-1 sm:gap-4 rounded-b-xl">
+                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-b-xl">
                   
                   {/* Home Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
@@ -308,6 +319,26 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Action Button (Save / Undo) */}
+                  <div className="flex-shrink-0">
+                    {match.isPlayed ? (
+                       <button 
+                         onClick={() => handleUndoMatch(match.id)}
+                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition-colors"
+                       >
+                         <Undo2 className="w-3.5 h-3.5" /> Edit/Reset
+                       </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleSaveMatch(match.id)}
+                        disabled={match.homeScore === '' || match.awayScore === ''}
+                        className="flex items-center gap-1.5 px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                      >
+                        <Check className="w-4 h-4" /> Simpan
+                      </button>
+                    )}
+                  </div>
+
                   {/* Away Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
@@ -327,26 +358,8 @@ export default function App() {
                       <div className="w-3 h-4 bg-red-500 rounded-sm"></div>
                     </div>
                   </div>
+
                 </div>
-                {/* Action Button (Save / Undo) */}
-                  <div className="flex w-full justify-center items-center py-2">
-                    {match.isPlayed ? (
-                       <button 
-                         onClick={() => handleUndoMatch(match.id)}
-                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition-colors"
-                       >
-                         <Undo2 className="w-3.5 h-3.5" /> Edit/Reset
-                       </button>
-                    ) : (
-                      <button 
-                        onClick={() => handleSaveMatch(match.id)}
-                        disabled={match.homeScore === '' || match.awayScore === ''}
-                        className="flex items-center gap-1.5 px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-                      >
-                        <Check className="w-4 h-4" /> Simpan
-                      </button>
-                    )}
-                  </div>
               </div>
             ))}
           </div>
