@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Trophy, Calendar, Check, Activity, Info, Pencil, RotateCcw } from 'lucide-react';
+import { Trophy, Calendar, Check, Edit2, RotateCcw, Activity, Info } from 'lucide-react';
 
 const TEAMS = ["Klari", "Lemah Mulya", "Adiarsa Timur", "Tunggak Jati"];
+
+// Objek untuk menyimpan link logo masing-masing tim
+const TEAM_LOGOS = {
+  "Klari": "public/klari.png",
+  "Lemah Mulya": "public/lemah-mulya.png",
+  "Adiarsa Timur": "public/adiarsa-timur.png",
+  "Tunggak Jati": "public/tunggak-jati.png"
+};
 
 const INITIAL_MATCHES = [
   { id: 1, home: "Lemah Mulya", away: "Adiarsa Timur", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
@@ -14,8 +22,7 @@ const INITIAL_MATCHES = [
 
 export default function App() {
   const [matches, setMatches] = useState(() => {
-    // Cek apakah ada data tersimpan di localStorage saat aplikasi pertama kali dimuat
-    const savedMatches = localStorage.getItem('minisoccer_matches_v2');
+    const savedMatches = localStorage.getItem('minisoccer_matches_v3');
     if (savedMatches) {
       try {
         return JSON.parse(savedMatches);
@@ -27,24 +34,17 @@ export default function App() {
     return INITIAL_MATCHES;
   });
 
-  // Efek ini akan berjalan setiap kali state 'matches' berubah (misal saat skor disimpan/diedit)
   useEffect(() => {
-    localStorage.setItem('minisoccer_matches_v2', JSON.stringify(matches));
+    localStorage.setItem('minisoccer_matches_v3', JSON.stringify(matches));
   }, [matches]);
 
-  // Function to handle input changes (works for both scores and cards)
   const handleInputChange = (matchId, type, value) => {
-    // Only allow numbers or empty string
     if (value !== '' && !/^\d+$/.test(value)) return;
-    
     setMatches(prevMatches => 
-      prevMatches.map(match => 
-        match.id === matchId ? { ...match, [type]: value } : match
-      )
+      prevMatches.map(match => match.id === matchId ? { ...match, [type]: value } : match)
     );
   };
 
-  // Function to save a match result including cards
   const handleSaveMatch = (matchId) => {
     setMatches(prevMatches => prevMatches.map(match => {
       if (match.id === matchId) {
@@ -63,22 +63,16 @@ export default function App() {
     }));
   };
 
-  // Function to edit a match (membuka form tanpa menghapus nilai)
   const handleEditMatch = (matchId) => {
     setMatches(prevMatches => prevMatches.map(match => 
-      match.id === matchId ? { 
-        ...match, 
-        isPlayed: false // Hanya merubah status form menjadi bisa diedit lagi
-      } : match
+      match.id === matchId ? { ...match, isPlayed: false } : match
     ));
   };
 
-  // Function to reset a match (mengosongkan semua nilai di form)
   const handleResetMatch = (matchId) => {
     setMatches(prevMatches => prevMatches.map(match => 
       match.id === matchId ? { 
         ...match, 
-        // Mengosongkan kembali form saat di-reset
         homeScore: '', awayScore: '', 
         homeYellow: '', awayYellow: '', 
         homeRed: '', awayRed: '', 
@@ -87,9 +81,7 @@ export default function App() {
     ));
   };
 
-  // Calculate standings dynamically based on played matches
   const standings = useMemo(() => {
-    // Initialize points mapping for all teams
     let table = TEAMS.reduce((acc, team) => {
       acc[team] = { 
         name: team, played: 0, win: 0, draw: 0, lose: 0, 
@@ -99,35 +91,27 @@ export default function App() {
       return acc;
     }, {});
 
-    // Loop through matches to calculate stats
     matches.forEach(match => {
-      // Cek apakah match sudah dimainkan (isPlayed) ATAU kedua skor sudah diketik (real-time)
-      const hasScores = match.homeScore !== '' && match.awayScore !== '';
-      
-      if (match.isPlayed || hasScores) {
-        // Gunakan parseInt dengan fallback 0 agar tidak error saat diketik
-        const hScore = parseInt(match.homeScore) || 0;
-        const aScore = parseInt(match.awayScore) || 0;
-        const hYellow = parseInt(match.homeYellow) || 0;
-        const aYellow = parseInt(match.awayYellow) || 0;
-        const hRed = parseInt(match.homeRed) || 0;
-        const aRed = parseInt(match.awayRed) || 0;
+      if (match.homeScore !== '' && match.awayScore !== '') {
+        const hScore = parseInt(match.homeScore);
+        const aScore = parseInt(match.awayScore);
+        const hYellow = match.homeYellow === '' ? 0 : parseInt(match.homeYellow);
+        const aYellow = match.awayYellow === '' ? 0 : parseInt(match.awayYellow);
+        const hRed = match.homeRed === '' ? 0 : parseInt(match.homeRed);
+        const aRed = match.awayRed === '' ? 0 : parseInt(match.awayRed);
 
-        // Update stats for Home Team
         table[match.home].played += 1;
         table[match.home].goalsFor += hScore;
         table[match.home].goalsAgainst += aScore;
         table[match.home].yellowCards += hYellow;
         table[match.home].redCards += hRed;
 
-        // Update stats for Away Team
         table[match.away].played += 1;
         table[match.away].goalsFor += aScore;
         table[match.away].goalsAgainst += hScore;
         table[match.away].yellowCards += aYellow;
         table[match.away].redCards += aRed;
 
-        // Calculate Points & W/D/L
         if (hScore > aScore) {
           table[match.home].win += 1;
           table[match.home].points += 3;
@@ -145,13 +129,11 @@ export default function App() {
       }
     });
 
-    // Calculate Goal Difference and convert to array
     const standingsArray = Object.values(table).map(team => ({
       ...team,
       goalDifference: team.goalsFor - team.goalsAgainst
     }));
 
-    // Sort logic (like Premier League): Points > Goal Difference > Goals For
     standingsArray.sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
       if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
@@ -181,7 +163,6 @@ export default function App() {
 
       <main className="max-w-3xl mx-auto px-2 mt-6 space-y-8">
         
-        {}
         {/* Standings Table Section */}
         <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center gap-2">
@@ -212,18 +193,21 @@ export default function App() {
                   <tr key={team.name} className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index === 0 ? 'bg-amber-50/30' : ''}`}>
                     <td className="px-3 py-3 text-center font-medium text-gray-500">
                       {index === 0 ? (
-                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-400 text-white flex items-center justify-center text-xs shadow-sm font-bold">1</div>
+                         <div className="w-6 h-6 mx-auto rounded-full bg-yellow-400 text-white flex items-center justify-center text-xs shadow-sm font-bold">1</div>
                       ) : index === 1 ? (
-                         <div className="w-6 h-6 mx-auto rounded-full bg-slate-400 text-white flex items-center justify-center text-xs shadow-sm font-bold">2</div>
+                         <div className="w-6 h-6 mx-auto rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs shadow-sm font-bold">2</div>
                       ) : index === 2 ? (
-                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-700 text-white flex items-center justify-center text-xs shadow-sm font-bold">3</div>
+                         <div className="w-6 h-6 mx-auto rounded-full bg-amber-600 text-white flex items-center justify-center text-xs shadow-sm font-bold">3</div>
                       ) : (
-                         <div className="w-6 h-6 mx-auto flex items-center justify-center text-sm font-medium">{index + 1}</div>
+                         <div className="w-6 h-6 mx-auto flex items-center justify-center text-xs font-bold text-slate-500">4</div>
                       )}
                     </td>
                     <td className="px-3 py-3 font-semibold whitespace-nowrap">
-                      {team.name}
-                      {index === 0 && <span className="ml-2 text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Top</span>}
+                      <div className="flex items-center gap-2">
+                        <img src={TEAM_LOGOS[team.name]} alt={team.name} className="w-6 h-6 rounded-full shadow-sm" />
+                        <span>{team.name}</span>
+                        {index === 0 && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider hidden sm:inline-block">Top</span>}
+                      </div>
                     </td>
                     <td className="px-2 py-3 text-center text-slate-500">{team.played}</td>
                     <td className="px-2 py-3 text-center">{team.win}</td>
@@ -241,7 +225,6 @@ export default function App() {
             </table>
           </div>
           
-          {/* Legend for the table columns */}
           <div className="bg-slate-50 px-4 py-3 border-t border-gray-100 text-[11px] text-slate-500 grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div className="flex items-center gap-1"><Info className="w-3 h-3"/> <b>M:</b> Main (Played)</div>
             <div><b>M (Hijau):</b> Menang (Win)</div>
@@ -254,7 +237,6 @@ export default function App() {
           </div>
         </section>
 
-        {}
         {/* Matches Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 px-2">
@@ -269,21 +251,20 @@ export default function App() {
                 {/* Match Header (Teams and Score) */}
                 <div className="p-4 flex items-center justify-between gap-2">
                   {/* Home Team */}
-                  <div className="flex-1 text-right">
-                    <p className={`font-bold text-sm sm:text-base leading-tight ${match.isPlayed && match.homeScore > match.awayScore ? 'text-slate-900' : 'text-slate-600'}`}>
+                  <div className="flex-1 flex items-center justify-end gap-2.5">
+                    <p className={`font-bold text-sm sm:text-base leading-tight text-right ${match.homeScore !== '' && match.homeScore > match.awayScore ? 'text-slate-900' : 'text-slate-600'}`}>
                       {match.home}
                     </p>
+                    <img src={TEAM_LOGOS[match.home]} alt={match.home} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-sm border border-slate-100" />
                   </div>
 
                   {/* Score / Inputs */}
                   <div className="flex flex-col items-center justify-center w-28 shrink-0">
                     {match.isPlayed ? (
-                      // Render Saved Score
                       <div className="bg-slate-800 text-white px-4 py-1.5 rounded-lg font-bold text-xl tracking-widest shadow-inner">
                         {match.homeScore} - {match.awayScore}
                       </div>
                     ) : (
-                      // Render Input Form for Score
                       <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
                         <input 
                           type="text" inputMode="numeric" pattern="[0-9]*"
@@ -303,22 +284,21 @@ export default function App() {
                   </div>
 
                   {/* Away Team */}
-                  <div className="flex-1 text-left">
-                    <p className={`font-bold text-sm sm:text-base leading-tight ${match.isPlayed && match.awayScore > match.homeScore ? 'text-slate-900' : 'text-slate-600'}`}>
+                  <div className="flex-1 flex items-center justify-start gap-2.5">
+                    <img src={TEAM_LOGOS[match.away]} alt={match.away} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-sm border border-slate-100" />
+                    <p className={`font-bold text-sm sm:text-base leading-tight text-left ${match.awayScore !== '' && match.awayScore > match.homeScore ? 'text-slate-900' : 'text-slate-600'}`}>
                       {match.away}
                     </p>
                   </div>
                 </div>
 
-                {/* Cards Input Section */}
-                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  
-                  {/* Home Cards */}
+                {/* Cards Input */}
+                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex flex-row items-center justify-between gap-1 sm:gap-4">
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
                       <div className="w-3 h-4 bg-yellow-400 rounded-sm"></div>
                       {match.isPlayed ? (
-                        <span className="text-xs font-bold w-4 text-center">{match.homeYellow}</span>
+                        <span className="text-xs font-bold w-4 text-center">{match.homeYellow === '' ? 0 : match.homeYellow}</span>
                       ) : (
                         <input type="text" inputMode="numeric" placeholder="0" className="w-6 text-xs text-center outline-none bg-transparent" value={match.homeYellow} onChange={(e) => handleInputChange(match.id, 'homeYellow', e.target.value)} />
                       )}
@@ -326,18 +306,17 @@ export default function App() {
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
                       <div className="w-3 h-4 bg-red-500 rounded-sm"></div>
                       {match.isPlayed ? (
-                        <span className="text-xs font-bold w-4 text-center">{match.homeRed}</span>
+                        <span className="text-xs font-bold w-4 text-center">{match.homeRed === '' ? 0 : match.homeRed}</span>
                       ) : (
                         <input type="text" inputMode="numeric" placeholder="0" className="w-6 text-xs text-center outline-none bg-transparent" value={match.homeRed} onChange={(e) => handleInputChange(match.id, 'homeRed', e.target.value)} />
                       )}
                     </div>
                   </div>
 
-                  {/* Away Cards */}
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
                       {match.isPlayed ? (
-                        <span className="text-xs font-bold w-4 text-center">{match.awayYellow}</span>
+                        <span className="text-xs font-bold w-4 text-center">{match.awayYellow === '' ? 0 : match.awayYellow}</span>
                       ) : (
                         <input type="text" inputMode="numeric" placeholder="0" className="w-6 text-xs text-center outline-none bg-transparent" value={match.awayYellow} onChange={(e) => handleInputChange(match.id, 'awayYellow', e.target.value)} />
                       )}
@@ -345,7 +324,7 @@ export default function App() {
                     </div>
                     <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
                       {match.isPlayed ? (
-                        <span className="text-xs font-bold w-4 text-center">{match.awayRed}</span>
+                        <span className="text-xs font-bold w-4 text-center">{match.awayRed === '' ? 0 : match.awayRed}</span>
                       ) : (
                         <input type="text" inputMode="numeric" placeholder="0" className="w-6 text-xs text-center outline-none bg-transparent" value={match.awayRed} onChange={(e) => handleInputChange(match.id, 'awayRed', e.target.value)} />
                       )}
@@ -353,34 +332,35 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-                
-                {/* Action Button (Save / Edit / Reset) */}
-                <div className="bg-slate-50 flex w-full justify-center items-center py-3 pb-4 gap-3 rounded-b-xl border-t border-slate-200">
+
+                {/* Action Buttons */}
+                <div className="flex w-full justify-center items-center py-3 bg-slate-50 border-t border-slate-100 rounded-b-xl gap-2">
                   {match.isPlayed ? (
-                     <>
-                       <button 
-                         onClick={() => handleEditMatch(match.id)}
-                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shadow-sm"
-                       >
-                         <Pencil className="w-4 h-4" /> Edit
-                       </button>
-                       <button 
-                         onClick={() => handleResetMatch(match.id)}
-                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors shadow-sm"
-                       >
-                         <RotateCcw className="w-4 h-4" /> Reset
-                       </button>
-                     </>
+                    <>
+                      <button 
+                        onClick={() => handleEditMatch(match.id)}
+                        className="flex items-center justify-center gap-1.5 px-4 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition-colors w-24"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button 
+                        onClick={() => handleResetMatch(match.id)}
+                        className="flex items-center justify-center gap-1.5 px-4 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition-colors w-24"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" /> Reset
+                      </button>
+                    </>
                   ) : (
                     <button 
                       onClick={() => handleSaveMatch(match.id)}
                       disabled={match.homeScore === '' || match.awayScore === ''}
-                      className="flex items-center gap-1.5 px-8 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                      className="flex items-center justify-center gap-1.5 px-8 py-2 text-sm font-bold text-white bg-slate-800 rounded-lg hover:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                     >
-                      <Check className="w-5 h-5" /> Simpan
+                      <Check className="w-4 h-4" /> Simpan Skor
                     </button>
                   )}
                 </div>
+
               </div>
             ))}
           </div>
