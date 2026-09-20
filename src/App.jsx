@@ -155,7 +155,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-lg font-bold leading-tight">TURNAMEN U35</h1>
-              <p className="text-xs text-slate-300">MINISOCCER KARAWANG TIMUR</p>
+              <p className="text-xs text-slate-300">SEPAKBOLA KARAWANG TIMUR</p>
             </div>
           </div>
         </div>
