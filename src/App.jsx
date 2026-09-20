@@ -5,7 +5,7 @@ const TEAMS = ["Klari", "Lemah Mulya", "Adiarsa Timur", "Tunggak Jati"];
 
 // Objek untuk menyimpan link logo masing-masing tim
 const TEAM_LOGOS = {
-  "Klari": "/klari.png",
+  "Klari": "/klari.jpeg",
   "Lemah Mulya": "/lemah-mulya.png",
   "Adiarsa Timur": "/adiarsa-timur.png",
   "Tunggak Jati": "/tunggak-jati.png"
@@ -154,7 +154,7 @@ export default function App() {
               <Trophy className="w-6 h-6 text-yellow-400" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">TURNAMEN U45</h1>
+              <h1 className="text-lg font-bold leading-tight">TURNAMEN U35</h1>
               <p className="text-xs text-slate-300">MINISOCCER KARAWANG TIMUR</p>
             </div>
           </div>
