@@ -22,7 +22,8 @@ const INITIAL_MATCHES = [
 
 export default function App() {
   const [matches, setMatches] = useState(() => {
-    const savedMatches = localStorage.getItem('minisoccer_matches_v3');
+    const savedMatches = localStorage.getItem('minisoccer_matches_v4');
+
     if (savedMatches) {
       try {
         return JSON.parse(savedMatches);
@@ -31,11 +32,12 @@ export default function App() {
         return INITIAL_MATCHES;
       }
     }
+
     return INITIAL_MATCHES;
   });
 
   useEffect(() => {
-    localStorage.setItem('minisoccer_matches_v3', JSON.stringify(matches));
+    localStorage.setItem('minisoccer_matches_v4', JSON.stringify(matches));
   }, [matches]);
 
   const handleInputChange = (matchId, type, value) => {
