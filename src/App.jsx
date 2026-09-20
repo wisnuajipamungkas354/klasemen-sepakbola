@@ -12,12 +12,12 @@ const TEAM_LOGOS = {
 };
 
 const INITIAL_MATCHES = [
-  { id: 1, home: "Lemah Mulya", away: "Adiarsa Timur", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
-  { id: 2, home: "Klari", away: "Tunggak Jati", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
-  { id: 3, home: "Adiarsa Timur", away: "Klari", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
-  { id: 4, home: "Lemah Mulya", away: "Tunggak Jati", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
-  { id: 5, home: "Lemah Mulya", away: "Klari", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
-  { id: 6, home: "Adiarsa Timur", away: "Tunggak Jati", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false }
+  { id: 1, home: "Klari", away: "Lemah Mulya", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
+  { id: 2, home: "Tunggak Jati", away: "Adiarsa Timur", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
+  { id: 3, home: "Klari", away: "Tunggak Jati", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
+  { id: 4, home: "Lemah Mulya", away: "Adiarsa Timur", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
+  { id: 5, home: "Klari", away: "Adiarsa Timur", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false },
+  { id: 6, home: "Lemah Mulya", away: "Tunggak Jati", homeScore: '', awayScore: '', homeYellow: '', awayYellow: '', homeRed: '', awayRed: '', isPlayed: false }
 ];
 
 export default function App() {
